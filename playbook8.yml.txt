@@ -1,0 +1,13 @@
+---
+- name: implementing loops
+  hosts: all
+  tasks:
+    - name: install or uninstalling softwares
+      apt:
+       name: "{{item.a}}"
+       state: "{{item.b}}"
+       update_cache: "{{item.c}}"
+      with_items:
+        - {a: tree,b: present,c: yes}
+        - {a: calc,b: absent,c: no}
+...
