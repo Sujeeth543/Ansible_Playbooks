@@ -1,0 +1,44 @@
+---
+- name: install or ubinstall softwares
+  hosts: all
+  tasks:
+    - name: configure softwares
+      apt:
+        name: "{{item.a}}"
+        state: "{{item.b}}"
+        update_cache: "{{item.c}}"
+      with_items:
+        - {a: tomcat9,b: present,c: yes}
+        - {a: tomcat9-admin,b: present,c: no}
+    - name: copy tomcat-users.xml
+      copy:
+        src: "{{item.a}}"
+        dest: "{{item.b}}"
+      with_items:
+        - {a: tomcat-users.xml,b: /etc/tomcat9/}
+    - name: change port number from 8080 to 9090
+      replace:
+        regexp: "{{item.a}}"
+        replace: "{{item.b}}"
+        path: "{{item.c}}"
+      with_items:
+        - {a: 8080,b: 9090,c: /etc/tomcat9/server.xml}
+    - name: restart tomcat9
+      service:
+        name: "{{item.a}}"
+        state: "{{item.b}}"
+      with_items:
+        - {a: tomcat9,b: restarted}
+    - name: pause for tomcat9 for 1 minute
+      pause:
+        minutes: "{{item.a}}"
+      with_items:
+        - {a: 1}
+    - name: site reachable on servers
+      uri:
+       url: "{{item.a}}"
+       status_code: "{{item.b}}"
+      with_items:
+        - {a: http://172.31.50.182,b: 200}
+        - {a: http://172.31.16.198,b: 200}
+...
